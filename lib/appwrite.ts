@@ -1,6 +1,10 @@
 import { Avatars, Client, Account, OAuthProvider } from "react-native-appwrite";
 import * as Linking from "expo-linking";
 import { openAuthSessionAsync } from "expo-web-browser";
+console.log({
+  projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID,
+  endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT
+});
 export const config = {
   platform: "com.jsm.restate",
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
@@ -35,13 +39,14 @@ export async function login() {
       response.toString(),
       redirectUri
     );
+    console.log("browser result", browserResult);
     if (browserResult.type !== "success")
-      throw new Error("Create OAuth2 token failed");
+      throw new Error("openAuthSessionAsync failed");
 
     const url = new URL(browserResult.url);
     const secret = url.searchParams.get("secret")?.toString();
     const userId = url.searchParams.get("userId")?.toString();
-    if (!secret || !userId) throw new Error("Create OAuth2 token failed");
+    if (!secret || !userId) throw new Error("get secret and userId failed");
 
     const session = await account.createSession(userId, secret);
     if (!session) throw new Error("Failed to create session");
